@@ -21,6 +21,11 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-sequelize.sync().then(result=>{
-    app.listen(3000);
+sequelize
+.sync()
+.then(result=>{
+    console.log("DB connected")
+    app.listen(3000,() => {
+        console.log("serve is started at port 3000")
+    });
 }).catch(err=>console.log(err))
