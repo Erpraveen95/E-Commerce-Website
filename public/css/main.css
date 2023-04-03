@@ -45,7 +45,12 @@ form {
   margin: 0 1rem;
   padding: 0;
 }
-
+.image{
+  height: 20rem;
+}
+.image img{
+  height: 100%;
+}
 .main-header__item a {
   text-decoration: none;
   color: white;
