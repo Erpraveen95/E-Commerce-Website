@@ -56,36 +56,6 @@ exports.postCart = (req, res, next) => {
   }).then(result => {
     console.log(result)
   })
-  // let fetchedCart
-  // let newQuantity = 1;
-
-  // req.user
-  //   .getCart()
-  //   .then(cart => {
-  //     fetchedCart = cart
-  //     return cart.getProducts({ where: { id: prodId } })
-  //   })
-  //   .then(products => {
-  //     let product
-  //     if (products.length > 0) {
-  //       product = products[0]
-  //     }
-  //     if (product) {                                //if already same product exist increment count
-  //       const oldQuantity = product.cartItem.quantity
-  //       newQuantity = oldQuantity + 1;
-  //       return product
-  //     }
-  //     return Product.findByPk(prodId)                //else find the product and quantity will remain 1
-  //   })
-  //   .then(product => {                            // common then block for both cases 
-  //     return fetchedCart.addProduct(product, {
-  //       through: { quantity: newQuantity }
-  //     })
-  //   })
-  //   .then(() => {
-  //     res.redirect('/cart')
-  //   })
-  //   .catch(err => console.log(err))
 };
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId
@@ -96,10 +66,13 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .catch(err => console.log(err))
 }
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders'
-  });
+  req.user.getOrders().then(orders => {
+    res.render('shop/orders', {
+      path: '/orders',
+      pageTitle: 'Your Orders',
+      orders: orders
+    });
+  })
 };
 
 exports.getCheckout = (req, res, next) => {
@@ -108,3 +81,11 @@ exports.getCheckout = (req, res, next) => {
     pageTitle: 'Checkout'
   });
 };
+
+exports.postOrder = (req, res) => {
+  req.user.addOrder()
+    .then(result => {
+      res.redirect('/orders')
+    })
+    .catch(err => console.log(err))
+}
