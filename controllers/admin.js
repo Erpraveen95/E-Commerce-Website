@@ -13,7 +13,13 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product(title, price, description, imageUrl, null, req.user._id)
+  const product = new Product({
+    title: title,
+    price: price,
+    description: description,
+    imageUrl: imageUrl,
+    userId: req.user // mongoose automaticaaly fetch the id from user object
+  })
   product.save()
     .then(() => {
       console.log('Created Product')
@@ -46,28 +52,37 @@ exports.postEditproduct = (req, res, next) => {
   const updatedPrice = req.body.price
   const updatedImgUrl = req.body.imageUrl
   const updatedDesc = req.body.description
-  const product = new Product(updatedTitle, updatedPrice, updatedDesc, updatedImgUrl, prodId)
-  product.save()
-    .then(() => {
-      console.log('Updated Product!!')
-      res.redirect('/admin/products')
-    })
+  Product.findById(prodId).then(product => {
+    product.title = updatedTitle;
+    product.price = updatedPrice;
+    product.description = updatedDesc;
+    product.imageUrl = updatedImgUrl;
+    return product.save()
+  }).then(() => {
+    console.log('Updated Product!!')
+    res.redirect('/admin/products')
+  })
     .catch(err => console.log(err))
 }
 
+
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll().then(products => {
-    res.render('admin/products', {
-      prods: products,
-      pageTitle: 'Admin Products',
-      path: '/admin/products'
-    });
-  }).catch(err => console.log(err));
+  Product.find()
+    // .select('title price -_id') //select will fetch only requested field - sign will avoid the mentioned field
+    //.populate('userId', "name")     // populate will fetch the corressponding data related to certain field
+    .then(products => {
+      console.log(products)
+      res.render('admin/products', {
+        prods: products,
+        pageTitle: 'Admin Products',
+        path: '/admin/products'
+      });
+    }).catch(err => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId
-  Product.deleteById(prodId)
+  Product.findByIdAndRemove(prodId)
     .then(result => {
       console.log('Delete Success')
       res.redirect('/admin/products')
