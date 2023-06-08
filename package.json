@@ -13,6 +13,9 @@
   "devDependencies": {
     "nodemon": "^2.0.22"
   },
+  "engines": {
+    "node": "18.14.1"
+  },
   "dependencies": {
     "body-parser": "^1.18.3",
     "dotenv": "^16.0.3",
